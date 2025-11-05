@@ -3,7 +3,7 @@ import streamlit as st
 
 DB_HOST = "localhost"
 DB_USER = "root"
-DB_PASSWORD = "Aishwari@2006"   # your MySQL password
+DB_PASSWORD = ""   # your MySQL password
 DB_NAME = "criminal_db"
 
 

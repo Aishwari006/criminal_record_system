@@ -1,9 +1,9 @@
 import streamlit as st
-from pages.dashboard import dashboard_page
-from pages.crud_core import core_crud_page
-from pages.crud_linking import linking_crud_page
-from pages.reports import reports_page
-from pages.deleted_log import deleted_log_page
+from modules.dashboard import dashboard_page
+from modules.crud_core import core_crud_page
+from modules.crud_linking import linking_crud_page
+from modules.reports import reports_page
+from modules.deleted_log import deleted_log_page
 
 st.set_page_config(layout="wide", page_title="Criminal Record System")
 st.title("🚓 Criminal Record Management System")

@@ -4,7 +4,7 @@ import json
 from db.connection import get_db_connection, execute_query
 
 
-def deleted_log_page():
+def deleted_log_page(role):
     st.header("🗑️ Deleted Records Log")
 
     # Fetch deleted data
@@ -55,47 +55,54 @@ def deleted_log_page():
 
     st.dataframe(parsed_df, use_container_width=True)
 
-    # --- RESTORE SECTION ---
-    if len(parsed_df) > 0:
-        selected_row = st.selectbox(
-            "Select a record to restore:",
-            parsed_df.apply(
-                lambda r: f"{r['log_id']} - {r['table_name']} ({r.get('first_name', '')} {r.get('last_name', '')})",
-                axis=1
+    # --- RESTORE SECTION (Admin only) ---
+    if role == "Admin":
+        st.subheader("♻️ Restore Deleted Records (Admin Only)")
+
+        if len(parsed_df) > 0:
+            selected_row = st.selectbox(
+                "Select a record to restore:",
+                parsed_df.apply(
+                    lambda r: f"{r['log_id']} - {r['table_name']} ({r.get('first_name', '')} {r.get('last_name', '')})",
+                    axis=1
+                )
             )
-        )
 
-        if selected_row:
-            log_id = int(selected_row.split(" - ")[0])
-            table_name = selected_row.split(" - ")[1].split(" ")[0].lower()
+            if selected_row:
+                log_id = int(selected_row.split(" - ")[0])
+                table_name = selected_row.split(" - ")[1].split(" ")[0].lower()
 
-            if st.button("♻️ Restore Selected Record", type="primary"):
-                try:
-                    # Map plural table names → correct singular procedure names
-                    restore_map = {
-                        "criminals": "sp_restore_criminal",
-                        "crimes": "sp_restore_crime",
-                        "cases": "sp_restore_case",
-                        "victims": "sp_restore_victim",
-                        "police_officer": "sp_restore_officer",
-                        "police_station": "sp_restore_station",
-                        "courts": "sp_restore_court"
-                    }
+                if st.button("♻️ Restore Selected Record", type="primary"):
+                    try:
+                        # Map plural table names → correct singular procedure names
+                        restore_map = {
+                            "criminals": "sp_restore_criminal",
+                            "crimes": "sp_restore_crime",
+                            "cases": "sp_restore_case",
+                            "victims": "sp_restore_victim",
+                            "police_officer": "sp_restore_officer",
+                            "police_station": "sp_restore_station",
+                            "courts": "sp_restore_court"
+                        }
 
-                    proc_name = restore_map.get(table_name.lower())
-                    if not proc_name:
-                        st.error(f"No restore procedure found for table `{table_name}`.")
-                        return
+                        proc_name = restore_map.get(table_name.lower())
+                        if not proc_name:
+                            st.error(f"No restore procedure found for table `{table_name}`.")
+                            return
 
-                    conn = get_db_connection()
-                    cursor = conn.cursor()
-                    cursor.callproc(proc_name, [log_id])
-                    conn.commit()
-                    cursor.close()
-                    conn.close()
+                        conn = get_db_connection()
+                        cursor = conn.cursor()
+                        cursor.callproc(proc_name, [log_id])
+                        conn.commit()
+                        cursor.close()
+                        conn.close()
 
-                    st.success(f"✅ Restored record from `{table_name}` successfully!")
-                    st.rerun()
+                        st.success(f"✅ Restored record from `{table_name}` successfully!")
+                        st.rerun()
 
-                except Exception as e:
-                    st.error(f"❌ Restore failed: {e}")
+                    except Exception as e:
+                        st.error(f"❌ Restore failed: {e}")
+
+    else:
+        # Officers or others can only view deleted logs
+        st.info("🔒 Restore option is restricted to Admin users only.")

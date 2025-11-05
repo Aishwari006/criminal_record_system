@@ -30,5 +30,5 @@ elif page == "CRUD: Linking Records":
 elif page == "Reports & Search":
     reports_page()
 elif page == "Deleted Records Log":
-    deleted_log_page()
+    deleted_log_page(role)
 

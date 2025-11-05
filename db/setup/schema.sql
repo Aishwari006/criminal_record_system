@@ -95,3 +95,45 @@ CREATE TABLE IF NOT EXISTS case_assignment (
   FOREIGN KEY (case_id) REFERENCES cases(case_id),
   FOREIGN KEY (officer_id) REFERENCES police_officer(officer_id)
 );
+
+-- 🧩 1️⃣ Police Stations ↔ Cases
+CREATE TABLE registrations (
+    registration_id INT AUTO_INCREMENT PRIMARY KEY,
+    station_id INT,
+    case_id INT,
+    registration_date DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (station_id) REFERENCES police_station(station_id),
+    FOREIGN KEY (case_id) REFERENCES cases(case_id)
+);
+
+-- 🧩 2️⃣ Cases ↔ Courts
+CREATE TABLE case_trial (
+    trial_id INT AUTO_INCREMENT PRIMARY KEY,
+    case_id INT,
+    court_id INT,
+    hearing_date DATE,
+    status VARCHAR(50),
+    FOREIGN KEY (case_id) REFERENCES cases(case_id),
+    FOREIGN KEY (court_id) REFERENCES courts(court_id)
+);
+
+-- 🧩 3️⃣ Crimes ↔ Cases
+CREATE TABLE case_crimes (
+    case_crime_id INT AUTO_INCREMENT PRIMARY KEY,
+    case_id INT,
+    crime_id INT,
+    details VARCHAR(255),
+    FOREIGN KEY (case_id) REFERENCES cases(case_id),
+    FOREIGN KEY (crime_id) REFERENCES crimes(crime_id)
+);
+
+-- 🧩 4️⃣ Police Stations ↔ Officers
+CREATE TABLE employees (
+    employee_id INT AUTO_INCREMENT PRIMARY KEY,
+    station_id INT,
+    officer_id INT,
+    assigned_date DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (station_id) REFERENCES police_station(station_id),
+    FOREIGN KEY (officer_id) REFERENCES police_officer(officer_id)
+);
+
